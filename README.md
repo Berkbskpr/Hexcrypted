@@ -35,6 +35,3 @@ Oluşan dosya `dist` klasöründe yer alır.
 2. Metni ve şifrenizi girin.
 3. **Şifrele** veya **Çöz** butonuna basın.
 4. Sonucu kopyalayıp kullanın.
-
-## Arkadaşımla Nasıl Paylaşırım?
-Sadece `dist` klasörü içindeki `Sifreleyici.exe` dosyasını arkadaşınıza göndermeniz yeterlidir. Arkadaşınızın bilgisayarında Python yüklü olmasına gerek **yoktur**.

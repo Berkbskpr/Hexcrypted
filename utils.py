@@ -1,0 +1,108 @@
+import logging
+import os
+import sys
+import tempfile
+import base64
+from typing import Optional
+
+# --- Logger Kurulumu ---
+def setup_logging():
+    """
+    Loglama sistemini başlatır.
+    Hem dosyaya (hexcrypted.log) hem de konsola çıktı verir.
+    """
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler("hexcrypted.log", encoding='utf-8'),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+    return logging.getLogger("Hexcrypted")
+
+logger = setup_logging()
+
+# --- Kaynak Yönetimi ---
+
+# Güncellenmiş Multi-size Neon Yeşil İkon Base64
+ICON_BASE64 = """
+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
+"""
+
+def get_icon_path() -> Optional[str]:
+    """
+    Uygulama ikonunu temp dizinine çıkartır ve yolunu döner.
+    """
+    try:
+        # PyInstaller ile paketlendiğinde _MEIPASS, normalde dosya dizini
+        if hasattr(sys, '_MEIPASS'):
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+            
+        icon_path = os.path.join(tempfile.gettempdir(), "hexcrypted_v2.ico")
+        
+        # Her zaman yeniden yaz (Overwrite) - İkon güncellemelerini garantiye al
+        with open(icon_path, "wb") as f:
+            f.write(base64.b64decode(ICON_BASE64))
+            
+        return icon_path
+    except Exception as e:
+        logger.error(f"İkon çıkartılamadı: {e}")
+        return None
